@@ -1,48 +1,79 @@
+#uses 'ox' conda environment 
+from PyQt6.QtWidgets import QApplication, QWidget, QLineEdit, QPushButton, QLabel, QVBoxLayout, QMessageBox
 import sys
-from PyQt6.QtWidgets import QApplication, QPushButton, QStackedWidget, QVBoxLayout, QWidget
 
-class MainWidget(QWidget):
+class StartPage(QWidget):
     def __init__(self):
         super().__init__()
-
         self.initUI()
 
     def initUI(self):
-        # Create the stacked widget
-        self.stacked_widget = QStackedWidget()
+        self.setWindowTitle("Start Page")
+        self.setGeometry(100, 100, 280, 80)
 
-        # Create the first widget and add it to the stack
-        self.first_widget = QWidget()
-        self.first_widget_layout = QVBoxLayout(self.first_widget)
-        self.switch_to_second = QPushButton("Switch to Second Widget", self.first_widget)
-        self.switch_to_second.clicked.connect(self.switchToSecondWidget)
-        self.first_widget_layout.addWidget(self.switch_to_second)
+        self.button = QPushButton("Go to Login", self)
+        self.button.clicked.connect(self.goToLogin)
+        layout = QVBoxLayout()
+        layout.addWidget(self.button)
+        self.setLayout(layout)
 
-        self.stacked_widget.addWidget(self.first_widget)
+    def goToLogin(self):
+        self.loginPage = LoginPage()
+        self.loginPage.show()
+        self.close()
 
-        # Create the second widget and add it to the stack
-        self.second_widget = QWidget()
-        self.second_widget_layout = QVBoxLayout(self.second_widget)
-        self.switch_to_first = QPushButton("Switch to First Widget", self.second_widget)
-        self.switch_to_first.clicked.connect(self.switchToFirstWidget)
-        self.second_widget_layout.addWidget(self.switch_to_first)
+class LoginPage(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
 
-        self.stacked_widget.addWidget(self.second_widget)
+    def initUI(self):
+        self.setWindowTitle("Login")
+        self.setGeometry(100, 100, 280, 150)
 
-        # Set the layout for the main widget
-        main_layout = QVBoxLayout(self)
-        main_layout.addWidget(self.stacked_widget)
+        layout = QVBoxLayout()
 
-    def switchToFirstWidget(self):
-        self.stacked_widget.setCurrentIndex(0)
+        self.username = QLineEdit(self)
+        self.username.setPlaceholderText("Username")
+        layout.addWidget(self.username)
 
-    def switchToSecondWidget(self):
-        self.stacked_widget.setCurrentIndex(1)
+        self.password = QLineEdit(self)
+        self.password.setPlaceholderText("Password")
+        self.password.setEchoMode(QLineEdit.EchoMode.Password)
+        layout.addWidget(self.password)
+
+        self.button = QPushButton("Login", self)
+        self.button.clicked.connect(self.checkCredentials)
+        layout.addWidget(self.button)
+
+        self.setLayout(layout)
+
+    def checkCredentials(self):
+        # Here you should implement the login logic
+        if self.username.text() == "user" and self.password.text() == "pass":
+            self.homePage = HomePage()
+            self.homePage.show()
+            self.close()
+        else:
+            QMessageBox.warning(self, "Error", "Wrong username or password")
+
+class HomePage(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.initUI()
+
+    def initUI(self):
+        self.setWindowTitle("Home")
+        self.setGeometry(100, 100, 280, 80)
+        self.label = QLabel("Welcome to the Home Page", self)
+        layout = QVBoxLayout()
+        layout.addWidget(self.label)
+        self.setLayout(layout)
 
 def main():
     app = QApplication(sys.argv)
-    main_widget = MainWidget()
-    main_widget.show()
+    startPage = StartPage()
+    startPage.show()
     sys.exit(app.exec())
 
 if __name__ == '__main__':
